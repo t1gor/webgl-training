@@ -1,9 +1,9 @@
 import ICanvasOptions from './ICanvasOptions';
-import TriangleProgram from '../Programs/Triangle/TriangleProgram';
+import IProgram from '../Programs/IProgram';
 
 class Canvas {
-
-	protected gl?: WebGLRenderingContext;
+	protected _gl?: WebGLRenderingContext;
+	private _program: IProgram;
 
 	constructor(
 		protected element: HTMLCanvasElement,
@@ -14,20 +14,27 @@ class Canvas {
 		// this.element.style.width = `${options.width.toString()}px`;
 
 		// get context & prepare
-		this.gl = this.element.getContext("webgl");
-		this.gl.viewport(0, 0, this.element.width, this.element.height);
-		this.gl.clearColor(1, 0, 0, 1);
+		this._gl = this.element.getContext("webgl");
+		this._gl.viewport(0, 0, this.element.width, this.element.height);
+		this._gl.clearColor(1, 0, 0, 1);
+	}
+
+	get gl() {
+		return this._gl;
+	}
+
+	set program(value: IProgram) {
+		this._program = value;
 	}
 
 	public draw() {
-		this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+		this._gl.clear(this._gl.COLOR_BUFFER_BIT);
 
-		const program = new TriangleProgram(this.gl, {
-			pointSize: 15,
-			color: [0, 0, 0, 1]
-		});
-		program.use();
-		program.run();
+		this._program.createShaders();
+		this._program.prepare();
+		this._program.createVertices();
+		this._program.run();
+
 	}
 }
 

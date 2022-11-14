@@ -6,4 +6,6 @@ export default interface IProgram {
 	prepare(): void;
 	createVertices(): void;
 	run(): void;
+	listen(canvas: HTMLCanvasElement): void;
+	cleanup(canvas: HTMLCanvasElement): void;
 }

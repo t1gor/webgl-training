@@ -13,8 +13,27 @@ class GigglingPoints implements IProgram {
 	protected fs: WebGLShader;
 	protected vertexCount = 5000;
 
+	protected mouseX = 0;
+	protected mouseY = 0;
+
 	constructor() {
 		this.run = this.run.bind(this);
+		this.onMouseMove = this.onMouseMove.bind(this);
+	}
+
+	listen(canvas: HTMLCanvasElement) {
+		canvas.addEventListener("mousemove", this.onMouseMove);
+	}
+
+	onMouseMove(event: MouseEvent) {
+		const canvas = event.target as HTMLCanvasElement;
+
+		this.mouseX = this.map(event.clientX, 0, canvas.width, -1, 1);
+		this.mouseY = this.map(event.clientY, 0, canvas.height, 1, -1);
+	}
+
+	protected map(value: number, minSrc: number, maxSrc: number, minDst: number, maxDst: number) {
+		return (value - minSrc) / (maxSrc - minSrc) * (maxDst - minDst) + minDst;
 	}
 
 	init(
@@ -75,14 +94,27 @@ class GigglingPoints implements IProgram {
 
 	run() {
 		for (let i = 0; i < this.vertexCount * 2; i += 2) {
-			this.vertices[i] += Math.random() * 0.01 - 0.005;
-			this.vertices[i + 1] += Math.random() * 0.01 - 0.005;
+			const dx = this.vertices[i] - this.mouseX;
+			const dy = this.vertices[i + 1] - this.mouseY;
+			const distance = Math.sqrt(dx * dx + dy * dy);
+
+			if (distance < 0.2) {
+				this.vertices[i] = this.mouseX + dx / distance * 0.2;
+				this.vertices[i + 1] = this.mouseY + dy / distance * 0.2;
+			} else {
+				this.vertices[i] += Math.random() * 0.01 - 0.005;
+				this.vertices[i + 1] += Math.random() * 0.01 - 0.005;
+			}
 		}
 
 		this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
 		this.gl.drawArrays(this.gl.POINTS, 0, this.vertexCount);
 
 		requestAnimationFrame(this.run);
+	}
+
+	cleanup(canvas: HTMLCanvasElement) {
+		canvas.removeEventListener("mousemove", this.onMouseMove);
 	}
 }
 

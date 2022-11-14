@@ -1,6 +1,6 @@
 import Canvas from './Canvas/Canvas';
 import ICanvasOptions from './Canvas/ICanvasOptions';
-import GigglingPoints from './Programs/02-GiglingPoints/GigglingPoints';
+import TriangleTransformProgram from './Programs/03-TriangleTransform/TriangleTransformProgram';
 
 const element = document.getElementById('webgl-target') as HTMLCanvasElement;
 const options: ICanvasOptions = {
@@ -9,6 +9,8 @@ const options: ICanvasOptions = {
 };
 
 const can = new Canvas(element, options);
-can.program = new GigglingPoints().init(can.gl, {color: [0, 0, 0, 1]});
-
+can.program = new TriangleTransformProgram().init(can.gl, {
+	pointSize: 10,
+	color: [0, 1, 0, 1]
+});
 can.draw();

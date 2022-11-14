@@ -1,20 +1,26 @@
-import ITriangleOptions from './ITriangleOptions';
+import TriangleTransformOptions from './TriangleTransformOptions';
 import IProgram from '../IProgram';
 
 import TriangleVertexShader from "./Shaders/Triangle.vs.glsl";
 import TriangleFragmentShader from "./Shaders/Triangle.fs.glsl";
 
-class TriangleProgram implements IProgram {
-	private options: ITriangleOptions;
+class TriangleTransformProgram implements IProgram {
+	private options: TriangleTransformOptions;
 	protected vertices: number[] = [];
 	protected program: WebGLProgram;
 	protected vs: WebGLShader;
 	protected fs: WebGLShader;
 	private _gl: WebGLRenderingContext;
 
+	private angle = 0;
+
+	constructor() {
+		this.run = this.run.bind(this);
+	}
+
 	init(
 		gl: WebGLRenderingContext,
-		options: ITriangleOptions
+		options: TriangleTransformOptions
 	) {
 		this._gl = gl;
 		this.options = options;
@@ -72,8 +78,40 @@ class TriangleProgram implements IProgram {
 		this._gl.useProgram(this.program);
 	}
 
+	rotateZ(angle: number) {
+		const cos = Math.cos(angle);
+		const sin = Math.sin(angle);
+		const matrix = new Float32Array([
+			cos,  sin, 0, 0,
+			-sin, cos, 0, 0,
+			0,    0,   1, 0,
+			0,    0,   0, 1
+		]);
+
+		const transformMatrix = this._gl.getUniformLocation(this.program, "transformMatrix");
+		this._gl.uniformMatrix4fv(transformMatrix, false, matrix);
+	}
+
+	rotateY(angle: number) {
+		const cos = Math.cos(angle);
+		const sin = Math.sin(angle);
+		const matrix = new Float32Array([
+			cos,  0, sin, 0,
+			0,    1,   0, 0,
+			-sin, 0, cos, 0,
+			0,    0,   0, 1
+		]);
+
+		const transformMatrix = this._gl.getUniformLocation(this.program, "transformMatrix");
+		this._gl.uniformMatrix4fv(transformMatrix, false, matrix);
+	}
+
 	run() {
+		this.rotateY(this.angle += 0.01);
+		this._gl.clear(this._gl.COLOR_BUFFER_BIT);
 		this._gl.drawArrays(this._gl.TRIANGLES, 0, 3);
+
+		requestAnimationFrame(this.run);
 	}
 
 	listen() {
@@ -85,4 +123,4 @@ class TriangleProgram implements IProgram {
 	}
 }
 
-export default TriangleProgram;
+export default TriangleTransformProgram;

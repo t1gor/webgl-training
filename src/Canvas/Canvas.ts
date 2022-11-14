@@ -25,6 +25,8 @@ class Canvas {
 
 	set program(value: IProgram) {
 		this._program = value;
+
+		this._program.listen(this.element);
 	}
 
 	public draw() {
@@ -34,7 +36,10 @@ class Canvas {
 		this._program.prepare();
 		this._program.createVertices();
 		this._program.run();
+	}
 
+	tearDown() {
+		this.program.cleanup(this.element);
 	}
 }
 

@@ -8,6 +8,7 @@
         "moduleResolution": "node",
         "typeRoots": [
             "node_modules/@types",
+            "node_modules/gl-matrix",
             "src/@types"
         ]
     }

@@ -10,13 +10,13 @@ class Canvas {
 		protected options: ICanvasOptions
 	) {
 		// resize
-		// this.element.style.height = `${options.height.toString()}px`;
-		// this.element.style.width = `${options.width.toString()}px`;
+		this.element.style.height = `${options.height.toString()}px`;
+		this.element.style.width = `${options.width.toString()}px`;
 
 		// get context & prepare
 		this._gl = this.element.getContext("webgl");
 		this._gl.viewport(0, 0, this.element.width, this.element.height);
-		this._gl.clearColor(1, 0, 0, 1);
+		this._gl.clearColor(0, 0, 0, 1);
 	}
 
 	get gl() {
